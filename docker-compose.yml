@@ -1,0 +1,10 @@
+services:
+  milo_banana_backend:
+    image: zhoutijie/milo_banana_backend:latest
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    volumes:
+      - ./data:/opt/app/data
+    restart: unless-stopped

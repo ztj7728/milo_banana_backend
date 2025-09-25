@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Milo Banana</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 24px 24px 0 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            animation: slideIn 0.6s ease-out 0.2s both;
+        }
+
+        .header h1 {
+            color: var(--text-primary);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .form-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-content {
+            animation: slideIn 0.6s ease-out 0.4s both;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            z-index: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
+        }
+
+        input:focus + i {
+            color: var(--primary-color);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn.loading {
+            pointer-events: none;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s ease infinite;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .status {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transform: translateY(10px);
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        .status.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .user-info {
+            display: none;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-top: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .user-info.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .user-info h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            font-size: 0.9rem;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--text-primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-value {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .points-badge {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .admin-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .admin-link a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .admin-link a:hover {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.5rem;
+                margin: 0.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-banana" style="color: #fbbf24;"></i> Milo Banana</h1>
+            <p>Welcome back! Please sign in to continue</p>
+        </div>
+
+        <div class="form-tabs">
+            <button class="tab-btn active" onclick="switchForm('login')">Login</button>
+            <button class="tab-btn" onclick="switchForm('signup')">Sign Up</button>
+        </div>
+
+        <div class="form-content">
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginUsername"><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="loginUsername" placeholder="Enter your username" required>
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+
+                <button type="submit" class="btn">
+                    <span class="btn-text">Sign In</span>
+                </button>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" style="display: none;" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label for="signupUsername"><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="signupUsername" placeholder="Choose a username" required>
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="signupPassword"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="signupPassword" placeholder="Choose a password" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword"><i class="fas fa-lock"></i> Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+
+                <button type="submit" class="btn">
+                    <span class="btn-text">Create Account</span>
+                </button>
+            </form>
+
+            <div id="statusMessage"></div>
+
+            <!-- User Info Section -->
+            <div class="user-info" id="userInfo">
+                <h3><i class="fas fa-user-circle"></i> Welcome Back!</h3>
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-user"></i>
+                        Username
+                    </div>
+                    <div class="info-value" id="userUsername"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-coins"></i>
+                        Points
+                    </div>
+                    <div class="points-badge" id="userPoints">0</div>
+                </div>
+                <button class="btn" onclick="logout()">
+                    <span class="btn-text">Sign Out</span>
+                </button>
+            </div>
+
+            <div class="admin-link">
+                <a href="/">
+                    <i class="fas fa-cog"></i>
+                    Admin Panel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentToken = localStorage.getItem('authToken');
+        let currentUser = null;
+
+        // Check if user is already logged in
+        window.addEventListener('load', () => {
+            if (currentToken) {
+                checkAuthStatus();
+            }
+        });
+
+        function switchForm(formType) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const tabBtns = document.querySelectorAll('.tab-btn');
+
+            // Reset status messages
+            document.getElementById('statusMessage').innerHTML = '';
+
+            // Switch tabs
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (formType === 'login') {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                document.querySelector('.header p').textContent = 'Welcome back! Please sign in to continue';
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                document.querySelector('.header p').textContent = 'Create your account to get started';
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const button = event.target.querySelector('button');
+            const buttonText = button.querySelector('.btn-text');
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const statusDiv = document.getElementById('statusMessage');
+
+            // Add loading state
+            button.classList.add('loading');
+            buttonText.style.opacity = '0';
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'auth.login',
+                        params: {
+                            username: username,
+                            password: password,
+                            grant_type: 'password'
+                        },
+                        id: Date.now()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.result) {
+                    const token = result.result.access_token;
+                    localStorage.setItem('authToken', token);
+                    currentToken = token;
+
+                    showStatus(statusDiv, 'Login successful!', 'success');
+
+                    // Fetch user profile
+                    await fetchUserProfile();
+                    showUserInfo();
+                } else {
+                    const errorMsg = result.error?.message || 'Login failed';
+                    showStatus(statusDiv, errorMsg, 'error');
+                }
+            } catch (error) {
+                showStatus(statusDiv, 'Connection error: ' + error.message, 'error');
+            } finally {
+                button.classList.remove('loading');
+                buttonText.style.opacity = '1';
+            }
+        }
+
+        async function handleSignup(event) {
+            event.preventDefault();
+
+            const button = event.target.querySelector('button');
+            const buttonText = button.querySelector('.btn-text');
+            const username = document.getElementById('signupUsername').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const statusDiv = document.getElementById('statusMessage');
+
+            if (password !== confirmPassword) {
+                showStatus(statusDiv, 'Passwords do not match', 'error');
+                return;
+            }
+
+            // Add loading state
+            button.classList.add('loading');
+            buttonText.style.opacity = '0';
+
+            try {
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'auth.signup',
+                        params: {
+                            username: username,
+                            password: password
+                        },
+                        id: Date.now()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.result) {
+                    showStatus(statusDiv, 'Account created successfully! You can now log in.', 'success');
+
+                    // Switch to login form
+                    setTimeout(() => {
+                        switchForm('login');
+                        document.getElementById('loginUsername').value = username;
+                    }, 1500);
+                } else {
+                    const errorMsg = result.error?.message || 'Signup failed';
+                    showStatus(statusDiv, errorMsg, 'error');
+                }
+            } catch (error) {
+                showStatus(statusDiv, 'Connection error: ' + error.message, 'error');
+            } finally {
+                button.classList.remove('loading');
+                buttonText.style.opacity = '1';
+            }
+        }
+
+        async function fetchUserProfile() {
+            try {
+                const response = await fetch('/api/me', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'user.profile',
+                        id: Date.now()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.result) {
+                    currentUser = result.result;
+                    updateUserDisplay();
+                } else {
+                    throw new Error(result.error?.message || 'Failed to fetch user profile');
+                }
+            } catch (error) {
+                console.error('Failed to fetch user profile:', error);
+                logout();
+            }
+        }
+
+        async function checkAuthStatus() {
+            if (!currentToken) return;
+
+            try {
+                await fetchUserProfile();
+                showUserInfo();
+            } catch (error) {
+                logout();
+            }
+        }
+
+        function updateUserDisplay() {
+            if (!currentUser) return;
+
+            document.getElementById('userUsername').textContent = currentUser.username;
+            document.getElementById('userPoints').textContent = currentUser.points || 0;
+        }
+
+        function showUserInfo() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'none';
+            document.querySelector('.form-tabs').style.display = 'none';
+            document.getElementById('userInfo').classList.add('show');
+            document.querySelector('.header p').textContent = 'You are successfully logged in';
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            currentToken = null;
+            currentUser = null;
+
+            // Reset UI
+            document.getElementById('userInfo').classList.remove('show');
+            document.querySelector('.form-tabs').style.display = 'flex';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('statusMessage').innerHTML = '';
+
+            // Reset forms
+            document.getElementById('loginForm').reset();
+            document.getElementById('signupForm').reset();
+
+            document.querySelector('.header p').textContent = 'Welcome back! Please sign in to continue';
+        }
+
+        function showStatus(element, message, type) {
+            const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
+
+            element.innerHTML = `
+                <div class="status ${type}">
+                    <i class="fas fa-${icon}"></i>
+                    ${message}
+                </div>
+            `;
+
+            setTimeout(() => {
+                element.innerHTML = '';
+            }, 5000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                const activeForm = document.querySelector('form[style*="display: none"]') ?
+                    document.getElementById('signupForm') :
+                    document.getElementById('loginForm');
+
+                if (activeForm.style.display !== 'none') {
+                    activeForm.querySelector('button').click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

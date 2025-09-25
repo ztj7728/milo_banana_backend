@@ -1,0 +1,62 @@
+[
+    {
+        "id": 6,
+        "prompt": "Generate the appearance of the child born by the two characters in the picture, professional photography",
+        "category": "ImageText2Image",
+        "title": "赛博生娃",
+        "description": "两张人脸生成孩子脸",
+        "cover_image": "https://youke1.picui.cn/s1/2025/09/24/68d3a8934d471.png",
+        "image_required": 2,
+        "variable_required": false,
+        "created_at": "2025-09-24 08:17:03",
+        "updated_at": "2025-09-24 08:17:40"
+    },
+    {
+        "id": 5,
+        "prompt": "Use the nano-banana model to create a 1/7 scale commercialized figure of thecharacter in the illustration, in a realistic style and environment. Place the figure on a computer desk, using a circular transparent acrylic base without any text.On the computer screen, display the ZBrush modeling process of the figure. Next to the computer screen, place a BANDAI-style toy packaging box printed with the original artwork.",
+        "category": "ImageText2Image",
+        "title": "3D建模手办",
+        "description": "上传你的个人照片",
+        "cover_image": "https://www.freedidi.com/wp-content/uploads/2025/08/ed976ac74b20250829194352.webp",
+        "image_required": 1,
+        "variable_required": false,
+        "created_at": "2025-09-24 07:57:46",
+        "updated_at": "2025-09-24 07:57:46"
+    },
+    {
+        "id": 1,
+        "prompt": "turn this photo into a character figure. Behind it, place a box with the character’s image printed on it, and a computer showing the Blender modeling process on its screen. In front of the box, add a round plastic base with the character figure standing on it. Make the PVC material look clear, and set the scene indoors if possible.",
+        "category": "ImageText2Image",
+        "title": "3D手办",
+        "description": "",
+        "cover_image": "https://youke1.picui.cn/s1/2025/09/23/68d29fb6e987c.jpg",
+        "image_required": 1,
+        "variable_required": false,
+        "created_at": "2025-09-22 16:49:51",
+        "updated_at": "2025-09-23 13:26:07"
+    },
+    {
+        "id": 2,
+        "prompt": "Enhance this image to high resolution.",
+        "category": "ImageText2Image",
+        "title": "高清修复",
+        "description": "让照片变清晰",
+        "cover_image": "https://youke1.picui.cn/s1/2025/09/23/68d2a06c225e3.jpg",
+        "image_required": 1,
+        "variable_required": false,
+        "created_at": "2025-09-22 16:49:51",
+        "updated_at": "2025-09-23 13:29:02"
+    },
+    {
+        "id": 3,
+        "prompt": "三只${{ 动物类型 }}在标志性${{ 地标 }}前的特写自拍照，它们表情各异，拍摄于黄金时刻，采用电影般的灯光。动物们靠近镜头，头挨着头，模仿自拍姿势，展现出喜悦、惊讶和平静的表情。背景展示了${{ 地标 }}完整的建筑细节，光线柔和，氛围温暖。采用摄影感、写实卡通风格拍摄，高细节，1:1 宽高比。",
+        "category": "Text2Image",
+        "title": "三只动物与地标自拍",
+        "description": "替换 [动物类型] 和 [地标] ",
+        "cover_image": "https://youke1.picui.cn/s1/2025/09/24/68d38826b8bcb.png",
+        "image_required": 0,
+        "variable_required": true,
+        "created_at": "2025-09-22 16:49:51",
+        "updated_at": "2025-09-24 06:48:16"
+    }
+]

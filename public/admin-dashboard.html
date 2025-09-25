@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Milo Banana Backend</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% { transform: translate3d(0,0,0); }
+            40%, 43% { transform: translate3d(0, -10px, 0); }
+            70% { transform: translate3d(0, -5px, 0); }
+            90% { transform: translate3d(0, -2px, 0); }
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 520px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 24px 24px 0 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            animation: slideIn 0.6s ease-out 0.2s both;
+        }
+
+        .header h1 {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .auth-section {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            animation: slideIn 0.6s ease-out 0.4s both;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            z-index: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
+        }
+
+        input:focus + i {
+            color: var(--primary-color);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn.loading {
+            pointer-events: none;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s ease infinite;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .config-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            pointer-events: none;
+        }
+
+        .config-section.authenticated {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .status {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transform: translateY(10px);
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        .status.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .current-config {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .current-config h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .config-item {
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+        }
+
+        .config-item:not(:last-child) {
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .config-label {
+            color: var(--text-primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .config-value {
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+            margin: 2rem 0;
+        }
+
+        .form-section h4 {
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .config-form {
+            animation: slideIn 0.6s ease-out 0.6s both;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.5rem;
+                margin: 0.5rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .config-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .config-value {
+                max-width: 100%;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--error-color);
+        }
+
+        /* Tab Styles */
+        .nav-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Prompt Store Styles */
+        .prompts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .prompts-header h3 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            font-size: 0.9rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .prompts-container {
+            min-height: 300px;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .loading-spinner i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .prompt-card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .prompt-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .prompt-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .prompt-title {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .prompt-category {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .prompt-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            min-width: auto;
+            width: auto;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, var(--error-color), #dc2626);
+        }
+
+        .prompt-content {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            max-height: 100px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .prompt-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .prompt-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* User Management Styles */
+        .user-card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .user-info-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .user-details h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .user-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .user-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .user-points {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: 1rem;
+        }
+
+        .btn-points {
+            background: linear-gradient(135deg, var(--secondary-color), #7c3aed);
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-points:hover {
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .users-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div>
+                    <h1><i class="fas fa-banana" style="color: #fbbf24;"></i> Admin Dashboard</h1>
+                    <p>System Configuration & User Management</p>
+                </div>
+                <button class="btn" onclick="logout()" style="width: auto; padding: 0.75rem 1.5rem; font-size: 0.9rem; margin-bottom: 0;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <div class="config-section authenticated" id="configSection">
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('config')">
+                    <i class="fas fa-cog"></i> Configuration
+                </button>
+                <button class="tab-btn" onclick="switchTab('users')">
+                    <i class="fas fa-users"></i> User Management
+                </button>
+                <button class="tab-btn" onclick="switchTab('prompts')">
+                    <i class="fas fa-lightbulb"></i> Prompt Store
+                </button>
+            </div>
+
+            <!-- Configuration Tab -->
+            <div class="tab-content active" id="configTab">
+                <div id="currentConfig" class="current-config">
+                    <h3><i class="fas fa-cog"></i> Current Configuration</h3>
+                    <div id="configDisplay"></div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <div class="config-form">
+                    <h4><i class="fas fa-edit"></i> Update Configuration</h4>
+                    <form onsubmit="updateConfig(event)">
+                        <div class="form-group">
+                            <label for="baseUrl"><i class="fas fa-globe"></i> Base URL</label>
+                            <input type="url" id="baseUrl" placeholder="https://api.joyzhi.com">
+                            <i class="fas fa-globe"></i>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="apiKey"><i class="fas fa-key"></i> API Key</label>
+                            <input type="text" id="apiKey" placeholder="sk-...">
+                            <i class="fas fa-key"></i>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="model"><i class="fas fa-robot"></i> AI Model</label>
+                            <input type="text" id="model" placeholder="gemini-2.5-flash-image-preview">
+                            <i class="fas fa-robot"></i>
+                        </div>
+
+                        <button type="submit" class="btn">
+                            <span class="btn-text">Update Configuration</span>
+                        </button>
+                    </form>
+
+                    <div id="updateStatus"></div>
+                </div>
+            </div>
+
+            <!-- User Management Tab -->
+            <div class="tab-content" id="usersTab">
+                <div class="prompts-header">
+                    <h3><i class="fas fa-users"></i> User Management</h3>
+                    <div>
+                        <span id="userCount" style="color: var(--text-secondary); margin-right: 1rem; font-size: 0.9rem;"></span>
+                        <button class="btn btn-primary" onclick="refreshUsers()" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <div class="prompts-container" id="usersContainer">
+                    <div class="loading-spinner" id="usersLoading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading users...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prompt Store Tab -->
+            <div class="tab-content" id="promptsTab">
+                <div class="prompts-header">
+                    <h3><i class="fas fa-lightbulb"></i> Prompt Store Management</h3>
+                    <button class="btn btn-primary" onclick="showAddPromptModal()" id="addPromptBtn" style="display: none;">
+                        <i class="fas fa-plus"></i> Add New Prompt
+                    </button>
+                </div>
+
+                <div class="prompts-container" id="promptsContainer">
+                    <div class="loading-spinner" id="promptsLoading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading prompts...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prompt Modal -->
+    <div class="modal" id="promptModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add New Prompt</h2>
+                <button class="modal-close" onclick="closePromptModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="promptForm" onsubmit="savePrompt(event)">
+                <input type="hidden" id="promptId" value="">
+                
+                <div class="form-group">
+                    <label for="promptTitle"><i class="fas fa-heading"></i> Title</label>
+                    <input type="text" id="promptTitle" placeholder="Enter prompt title" required>
+                    <i class="fas fa-heading"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="promptCategory"><i class="fas fa-tag"></i> Category</label>
+                    <input type="text" id="promptCategory" placeholder="e.g., Text2Image, ImageText2Image" required>
+                    <i class="fas fa-tag"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="promptContent"><i class="fas fa-comment-alt"></i> Prompt Content</label>
+                    <textarea id="promptContent" placeholder="Enter the prompt content..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="promptDescription"><i class="fas fa-info-circle"></i> Description</label>
+                    <textarea id="promptDescription" placeholder="Brief description of the prompt (optional)"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="promptCoverImage"><i class="fas fa-image"></i> Cover Image URL</label>
+                    <input type="url" id="promptCoverImage" placeholder="https://example.com/image.jpg">
+                    <i class="fas fa-image"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="promptImageRequired"><i class="fas fa-images"></i> Images Required (Number)</label>
+                    <input type="number" id="promptImageRequired" placeholder="Enter number of images required" min="0" max="10">
+                    <i class="fas fa-images"></i>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="promptVariableRequired">
+                    <label for="promptVariableRequired">Variables Required</label>
+                </div>
+
+                <button type="submit" class="btn">
+                    <span class="btn-text" id="saveButtonText">Save Prompt</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Points Management Modal -->
+    <div class="modal" id="pointsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Manage User Points</h2>
+                <button class="modal-close" onclick="closePointsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="pointsForm" onsubmit="savePoints(event)">
+                <input type="hidden" id="pointsUserId" value="">
+
+                <div class="form-group">
+                    <label for="pointsUsername"><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="pointsUsername" readonly style="background: #f3f4f6;">
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="currentPoints"><i class="fas fa-coins"></i> Current Points</label>
+                    <input type="number" id="currentPoints" readonly style="background: #f3f4f6;">
+                    <i class="fas fa-coins"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="pointsAction"><i class="fas fa-cog"></i> Action</label>
+                    <select id="pointsAction" style="width: 100%; padding: 1rem 1rem 1rem 3rem; border: 2px solid var(--border-color); border-radius: 12px; font-size: 1rem; background: rgba(255, 255, 255, 0.8);" onchange="updatePointsUI()">
+                        <option value="set">Set Points</option>
+                        <option value="add">Add Points</option>
+                        <option value="subtract">Subtract Points</option>
+                    </select>
+                    <i class="fas fa-cog"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="pointsValue"><i class="fas fa-calculator"></i> <span id="pointsActionLabel">New Points Value</span></label>
+                    <input type="number" id="pointsValue" placeholder="Enter points value" min="0" required>
+                    <i class="fas fa-calculator"></i>
+                </div>
+
+                <button type="submit" class="btn">
+                    <span class="btn-text">Update Points</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let authToken = localStorage.getItem('adminToken');
+
+        // Check authentication on page load
+        window.addEventListener('load', () => {
+            if (!authToken) {
+                window.location.href = '/admin-login.html';
+                return;
+            }
+
+            // Verify token is still valid
+            fetch('/api/config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'config.get',
+                    id: Date.now()
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.result) {
+                    // Token valid, initialize dashboard
+                    document.getElementById('addPromptBtn').style.display = 'block';
+                    loadCurrentConfig();
+                } else {
+                    // Token invalid, redirect to login
+                    localStorage.removeItem('adminToken');
+                    window.location.href = '/admin-login.html';
+                }
+            })
+            .catch(() => {
+                // Error validating token, redirect to login
+                localStorage.removeItem('adminToken');
+                window.location.href = '/admin-login.html';
+            });
+        });
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            showToast('Logged out successfully', 'success');
+            setTimeout(() => {
+                window.location.href = '/admin-login.html';
+            }, 1000);
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        async function loadCurrentConfig() {
+            try {
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'config.get',
+                        id: Date.now()
+                    })
+                });
+
+                const result = await response.json();
+                if (result.result) {
+                    displayCurrentConfig(result.result);
+                    populateForm(result.result);
+                }
+            } catch (error) {
+                console.error('Failed to load config:', error);
+                showToast('Failed to load configuration', 'error');
+            }
+        }
+
+        function displayCurrentConfig(config) {
+            const configDisplay = document.getElementById('configDisplay');
+            configDisplay.innerHTML = `
+                <div class="config-item">
+                    <div class="config-label">
+                        <i class="fas fa-globe"></i>
+                        Base URL
+                    </div>
+                    <div class="config-value">${config.baseUrl}</div>
+                </div>
+                <div class="config-item">
+                    <div class="config-label">
+                        <i class="fas fa-key"></i>
+                        API Key
+                    </div>
+                    <div class="config-value">${config.apiKey ? '●●●●●●●●' + config.apiKey.slice(-4) : 'Not set'}</div>
+                </div>
+                <div class="config-item">
+                    <div class="config-label">
+                        <i class="fas fa-robot"></i>
+                        AI Model
+                    </div>
+                    <div class="config-value">${config.model}</div>
+                </div>
+            `;
+        }
+
+        function populateForm(config) {
+            document.getElementById('baseUrl').value = config.baseUrl || '';
+            document.getElementById('apiKey').value = '';
+            document.getElementById('model').value = config.model || '';
+        }
+
+        async function updateConfig(event) {
+            event.preventDefault();
+            
+            const button = event.target.querySelector('button');
+            const buttonText = button.querySelector('.btn-text');
+            
+            if (!authToken) {
+                showToast('Please authenticate first', 'error');
+                return;
+            }
+
+            const statusDiv = document.getElementById('updateStatus');
+            const baseUrl = document.getElementById('baseUrl').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const model = document.getElementById('model').value.trim();
+
+            const updates = {};
+            if (baseUrl) updates.baseUrl = baseUrl;
+            if (apiKey) updates.apiKey = apiKey;
+            if (model) updates.model = model;
+
+            if (Object.keys(updates).length === 0) {
+                showStatus(statusDiv, 'Please fill in at least one field to update', 'warning');
+                return;
+            }
+
+            // Add loading state
+            button.classList.add('loading');
+            buttonText.style.opacity = '0';
+
+            try {
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'config.update',
+                        params: updates,
+                        id: Date.now()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.result) {
+                    showStatus(statusDiv, 'Configuration updated successfully!', 'success');
+                    showToast('Configuration updated!', 'success');
+                    displayCurrentConfig(result.result.config);
+                    
+                    // Clear the API key field for security
+                    document.getElementById('apiKey').value = '';
+                } else {
+                    const errorMsg = result.error?.message || 'Update failed';
+                    showStatus(statusDiv, 'Update failed: ' + errorMsg, 'error');
+                    showToast('Update failed', 'error');
+                }
+            } catch (error) {
+                showStatus(statusDiv, 'Update failed: ' + error.message, 'error');
+                showToast('Connection error', 'error');
+            } finally {
+                // Remove loading state
+                button.classList.remove('loading');
+                buttonText.style.opacity = '1';
+            }
+        }
+
+        function showStatus(element, message, type) {
+            const icon = type === 'success' ? 'check-circle' : 
+                        type === 'error' ? 'exclamation-circle' : 
+                        'exclamation-triangle';
+            
+            element.innerHTML = `
+                <div class="status ${type}">
+                    <i class="fas fa-${icon}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                element.innerHTML = '';
+            }, 5000);
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.closest('.config-form')) {
+                    document.querySelector('.config-form button').click();
+                }
+            }
+        });
+
+        // Tab Management
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            // Add active class to selected tab button
+            event.target.classList.add('active');
+
+            // Load data when switching to specific tabs
+            if (tabName === 'users') {
+                loadUsers();
+            } else if (tabName === 'prompts') {
+                loadPrompts();
+            }
+        }
+
+        // User Management Functions
+        async function loadUsers() {
+            const container = document.getElementById('usersContainer');
+            const loading = document.getElementById('usersLoading');
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'users.list',
+                        id: Date.now()
+                    })
+                });
+
+                const result = await response.json();
+                loading.style.display = 'none';
+
+                if (result.result) {
+                    displayUsers(result.result);
+                } else {
+                    container.innerHTML = '<div class="status error"><i class="fas fa-exclamation-circle"></i>Failed to load users: ' + (result.error?.message || 'Unknown error') + '</div>';
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                container.innerHTML = '<div class="status error"><i class="fas fa-exclamation-circle"></i>Failed to load users: ' + error.message + '</div>';
+            }
+        }
+
+        function displayUsers(users) {
+            const container = document.getElementById('usersContainer');
+            const userCount = document.getElementById('userCount');
+
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <h3>No users found</h3>
+                        <p>No registered users in the system.</p>
+                    </div>
+                `;
+                userCount.textContent = '';
+                return;
+            }
+
+            // Calculate stats
+            const totalPoints = users.reduce((sum, user) => sum + (user.points || 0), 0);
+            const avgPoints = Math.round(totalPoints / users.length);
+
+            // Display stats
+            const statsHtml = `
+                <div class="users-stats">
+                    <div class="stat-card">
+                        <span class="stat-value">${users.length}</span>
+                        <span class="stat-label">Total Users</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">${totalPoints.toLocaleString()}</span>
+                        <span class="stat-label">Total Points</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">${avgPoints}</span>
+                        <span class="stat-label">Avg Points</span>
+                    </div>
+                </div>
+            `;
+
+            const usersHtml = users.map(user => `
+                <div class="user-card">
+                    <div class="user-info-section">
+                        <div class="user-avatar">${user.username.charAt(0).toUpperCase()}</div>
+                        <div class="user-details">
+                            <h4>${escapeHtml(user.username)}</h4>
+                            <div class="user-meta">
+                                <span><i class="fas fa-calendar"></i> ${new Date(user.created_at).toLocaleDateString()}</span>
+                                <span><i class="fas fa-hashtag"></i> ID: ${user.id}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-points">${user.points || 0}</div>
+                    <div class="user-actions">
+                        <button class="btn btn-small btn-points" onclick="editUserPoints(${user.id}, '${escapeHtml(user.username)}', ${user.points || 0})">
+                            <i class="fas fa-coins"></i> Edit Points
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = statsHtml + usersHtml;
+            userCount.textContent = `${users.length} user${users.length !== 1 ? 's' : ''}`;
+        }
+
+        function refreshUsers() {
+            loadUsers();
+        }
+
+        function editUserPoints(userId, username, currentPoints) {
+            document.getElementById('pointsUserId').value = userId;
+            document.getElementById('pointsUsername').value = username;
+            document.getElementById('currentPoints').value = currentPoints;
+            document.getElementById('pointsValue').value = '';
+            document.getElementById('pointsAction').value = 'set';
+            updatePointsUI();
+            document.getElementById('pointsModal').classList.add('show');
+        }
+
+        function updatePointsUI() {
+            const action = document.getElementById('pointsAction').value;
+            const label = document.getElementById('pointsActionLabel');
+            const input = document.getElementById('pointsValue');
+
+            switch (action) {
+                case 'set':
+                    label.textContent = 'New Points Value';
+                    input.placeholder = 'Enter new points value';
+                    input.min = '0';
+                    break;
+                case 'add':
+                    label.textContent = 'Points to Add';
+                    input.placeholder = 'Enter points to add';
+                    input.min = '1';
+                    break;
+                case 'subtract':
+                    label.textContent = 'Points to Subtract';
+                    input.placeholder = 'Enter points to subtract';
+                    input.min = '1';
+                    break;
+            }
+        }
+
+        function closePointsModal() {
+            document.getElementById('pointsModal').classList.remove('show');
+        }
+
+        async function savePoints(event) {
+            event.preventDefault();
+
+            if (!authToken) {
+                showToast('Please authenticate first', 'error');
+                return;
+            }
+
+            const button = event.target.querySelector('button');
+            const buttonText = button.querySelector('.btn-text');
+            const userId = parseInt(document.getElementById('pointsUserId').value);
+            const pointsValue = parseInt(document.getElementById('pointsValue').value);
+            const action = document.getElementById('pointsAction').value;
+
+            // Add loading state
+            button.classList.add('loading');
+            buttonText.style.opacity = '0';
+
+            try {
+                let method;
+                let params;
+
+                switch (action) {
+                    case 'set':
+                        method = 'users.updatePoints';
+                        params = { userId, points: pointsValue };
+                        break;
+                    case 'add':
+                        method = 'users.addPoints';
+                        params = { userId, points: pointsValue };
+                        break;
+                    case 'subtract':
+                        method = 'users.subtractPoints';
+                        params = { userId, points: pointsValue };
+                        break;
+                }
+
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: method,
+                        params: params,
+                        id: Date.now()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.result) {
+                    const actionText = action === 'set' ? 'updated' : action === 'add' ? 'added' : 'subtracted';
+                    showToast(`Points ${actionText} successfully!`, 'success');
+                    closePointsModal();
+                    loadUsers(); // Reload users list
+                } else {
+                    showToast('Failed to update points: ' + (result.error?.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showToast('Failed to update points: ' + error.message, 'error');
+            } finally {
+                // Remove loading state
+                button.classList.remove('loading');
+                buttonText.style.opacity = '1';
+            }
+        }
+
+        // Prompt Store Management
+        async function loadPrompts() {
+            const container = document.getElementById('promptsContainer');
+            const loading = document.getElementById('promptsLoading');
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/prompt_store', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'prompts.list',
+                        id: Date.now()
+                    })
+                });
+
+                const result = await response.json();
+                loading.style.display = 'none';
+
+                if (result.result) {
+                    displayPrompts(result.result);
+                } else {
+                    container.innerHTML = '<div class="error">Failed to load prompts: ' + (result.error?.message || 'Unknown error') + '</div>';
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                container.innerHTML = '<div class="error">Failed to load prompts: ' + error.message + '</div>';
+            }
+        }
+
+        function displayPrompts(prompts) {
+            const container = document.getElementById('promptsContainer');
+
+            if (prompts.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        <i class="fas fa-lightbulb" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <h3>No prompts found</h3>
+                        <p>Click "Add New Prompt" to create your first prompt.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = prompts.map(prompt => `
+                <div class="prompt-card">
+                    <div class="prompt-card-header">
+                        <div>
+                            <h4 class="prompt-title">${escapeHtml(prompt.title)}</h4>
+                            <span class="prompt-category">${escapeHtml(prompt.category)}</span>
+                        </div>
+                        ${authToken ? `
+                        <div class="prompt-actions">
+                            <button class="btn btn-small btn-edit" onclick="editPrompt(${prompt.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-small btn-delete" onclick="deletePrompt(${prompt.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <div class="prompt-content">${escapeHtml(prompt.prompt.substring(0, 200))}${prompt.prompt.length > 200 ? '...' : ''}</div>
+                    ${prompt.description ? `<div class="prompt-description">${escapeHtml(prompt.description)}</div>` : ''}
+                    <div class="prompt-meta">
+                        <span><i class="fas fa-images"></i> Images: ${prompt.image_required || 0}</span>
+                        <span><i class="fas fa-code"></i> Variables: ${prompt.variable_required ? 'Required' : 'Optional'}</span>
+                        <span><i class="fas fa-calendar"></i> ${new Date(prompt.created_at).toLocaleDateString()}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showAddPromptModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Prompt';
+            document.getElementById('saveButtonText').textContent = 'Save Prompt';
+            document.getElementById('promptForm').reset();
+            document.getElementById('promptId').value = '';
+            document.getElementById('promptModal').classList.add('show');
+        }
+
+        function closePromptModal() {
+            document.getElementById('promptModal').classList.remove('show');
+        }
+
+        async function editPrompt(promptId) {
+            try {
+                const response = await fetch('/api/prompt_store', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'prompts.get',
+                        params: { id: promptId },
+                        id: Date.now()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.result) {
+                    const prompt = result.result;
+                    document.getElementById('modalTitle').textContent = 'Edit Prompt';
+                    document.getElementById('saveButtonText').textContent = 'Update Prompt';
+                    document.getElementById('promptId').value = prompt.id;
+                    document.getElementById('promptTitle').value = prompt.title;
+                    document.getElementById('promptCategory').value = prompt.category;
+                    document.getElementById('promptContent').value = prompt.prompt;
+                    document.getElementById('promptDescription').value = prompt.description || '';
+                    document.getElementById('promptCoverImage').value = prompt.cover_image || '';
+                    document.getElementById('promptImageRequired').value = prompt.image_required || 0;
+                    document.getElementById('promptVariableRequired').checked = prompt.variable_required;
+                    document.getElementById('promptModal').classList.add('show');
+                } else {
+                    showToast('Failed to load prompt: ' + (result.error?.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showToast('Failed to load prompt: ' + error.message, 'error');
+            }
+        }
+
+        async function savePrompt(event) {
+            event.preventDefault();
+
+            if (!authToken) {
+                showToast('Please authenticate first', 'error');
+                return;
+            }
+
+            const button = event.target.querySelector('button');
+            const buttonText = button.querySelector('.btn-text');
+            const promptId = document.getElementById('promptId').value;
+            
+            const promptData = {
+                title: document.getElementById('promptTitle').value,
+                category: document.getElementById('promptCategory').value,
+                prompt: document.getElementById('promptContent').value,
+                description: document.getElementById('promptDescription').value,
+                cover_image: document.getElementById('promptCoverImage').value,
+                image_required: parseInt(document.getElementById('promptImageRequired').value) || 0,
+                variable_required: document.getElementById('promptVariableRequired').checked
+            };
+
+            // Add loading state
+            button.classList.add('loading');
+            buttonText.style.opacity = '0';
+
+            try {
+                const isEdit = promptId !== '';
+                const method = isEdit ? 'prompts.update' : 'prompts.create';
+                const params = isEdit ? { id: parseInt(promptId), ...promptData } : promptData;
+
+                const response = await fetch('/api/prompt_store', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: method,
+                        params: params,
+                        id: Date.now()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.result) {
+                    showToast(isEdit ? 'Prompt updated successfully!' : 'Prompt created successfully!', 'success');
+                    closePromptModal();
+                    loadPrompts(); // Reload the prompts list
+                } else {
+                    showToast('Failed to save prompt: ' + (result.error?.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showToast('Failed to save prompt: ' + error.message, 'error');
+            } finally {
+                // Remove loading state
+                button.classList.remove('loading');
+                buttonText.style.opacity = '1';
+            }
+        }
+
+        async function deletePrompt(promptId) {
+            if (!authToken) {
+                showToast('Please authenticate first', 'error');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this prompt?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/prompt_store', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'prompts.delete',
+                        params: { id: promptId },
+                        id: Date.now()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.result) {
+                    showToast('Prompt deleted successfully!', 'success');
+                    loadPrompts(); // Reload the prompts list
+                } else {
+                    showToast('Failed to delete prompt: ' + (result.error?.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showToast('Failed to delete prompt: ' + error.message, 'error');
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('promptModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                closePromptModal();
+            }
+        });
+
+        // Close points modal when clicking outside
+        document.getElementById('pointsModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                closePointsModal();
+            }
+        });
+    </script>
+</body>
+</html>

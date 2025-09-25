@@ -21,6 +21,10 @@ import { JsonRpcService, JsonRpcErrorCode } from './jsonrpc';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy settings for reverse proxy (Caddy, nginx, etc.)
+// This enables Express to trust X-Forwarded-For headers for accurate client IP detection
+app.set('trust proxy', true);
+
 // Security middleware
 app.use(helmet({
   contentSecurityPolicy: {

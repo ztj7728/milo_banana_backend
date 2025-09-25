@@ -22,8 +22,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Trust proxy settings for reverse proxy (Caddy, nginx, etc.)
-// This enables Express to trust X-Forwarded-For headers for accurate client IP detection
-app.set('trust proxy', true);
+// Only trust the first proxy (loopback) for security - prevents IP spoofing
+// In production behind Caddy, this trusts only the direct reverse proxy connection
+app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet({

@@ -3,6 +3,8 @@ import axios from 'axios';
 export interface WeChatConfig {
   appId: string;
   appSecret: string;
+  miniProgramAppId?: string;
+  miniProgramAppSecret?: string;
 }
 
 export interface WeChatAuthResponse {
@@ -12,6 +14,7 @@ export interface WeChatAuthResponse {
   openid?: string;
   scope?: string;
   unionid?: string;
+  session_key?: string;
   errcode?: number;
   errmsg?: string;
 }
@@ -38,7 +41,7 @@ export class WeChatService {
   }
 
   /**
-   * Exchange authorization code for access token and openid
+   * Exchange authorization code for access token and openid (OAuth API for web/app)
    */
   async getAccessToken(code: string): Promise<WeChatAuthResponse> {
     const url = 'https://api.weixin.qq.com/sns/oauth2/access_token';
@@ -54,6 +57,30 @@ export class WeChatService {
       return response.data as WeChatAuthResponse;
     } catch (error) {
       throw new Error(`WeChat API error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Exchange js_code for session_key and openid (Mini-Program API)
+   */
+  async getMiniProgramSession(jsCode: string): Promise<WeChatAuthResponse> {
+    if (!this.config.miniProgramAppId || !this.config.miniProgramAppSecret) {
+      throw new Error('Mini-Program credentials not configured');
+    }
+
+    const url = 'https://api.weixin.qq.com/sns/jscode2session';
+    const params = {
+      appid: this.config.miniProgramAppId,
+      secret: this.config.miniProgramAppSecret,
+      js_code: jsCode,
+      grant_type: 'authorization_code'
+    };
+
+    try {
+      const response = await axios.get(url, { params });
+      return response.data as WeChatAuthResponse;
+    } catch (error) {
+      throw new Error(`WeChat Mini-Program API error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -112,10 +139,17 @@ export class WeChatService {
 export const createWeChatService = (): WeChatService | null => {
   const appId = process.env.WECHAT_APP_ID;
   const appSecret = process.env.WECHAT_APP_SECRET;
+  const miniProgramAppId = process.env.WECHAT_MINIPROGRAM_APP_ID;
+  const miniProgramAppSecret = process.env.WECHAT_MINIPROGRAM_APP_SECRET;
 
   if (!appId || !appSecret) {
     return null;
   }
 
-  return new WeChatService({ appId, appSecret });
+  return new WeChatService({
+    appId,
+    appSecret,
+    miniProgramAppId,
+    miniProgramAppSecret
+  });
 };

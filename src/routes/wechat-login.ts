@@ -34,7 +34,7 @@ router.post('/', async (req: Request, res: Response) => {
       return;
     }
 
-    const { code, userInfo, encryptedData, iv, signature, rawData } = params;
+    const { code, platform, userInfo, encryptedData, iv, signature, rawData } = params;
 
     if (!code) {
       JsonRpcService.sendError(
@@ -46,20 +46,40 @@ router.post('/', async (req: Request, res: Response) => {
       return;
     }
 
+    // Detect platform - default to 'miniprogram' if not specified for backward compatibility
+    const loginPlatform = platform || 'miniprogram';
+
     // Initialize WeChat service
     const wechatService = createWeChatService();
     if (!wechatService) {
       JsonRpcService.sendError(
         res,
         JsonRpcErrorCode.INTERNAL_ERROR,
-        'WeChat service not configured. Please set WECHAT_APP_ID and WECHAT_APP_SECRET',
+        'WeChat service not configured. Please set WeChat credentials in environment variables',
         id
       );
       return;
     }
 
-    // Exchange code for access token and openid
-    const authResponse = await wechatService.getAccessToken(code);
+    // Use appropriate API based on platform
+    let authResponse;
+    try {
+      if (loginPlatform === 'miniprogram') {
+        // Use Mini-Program API
+        authResponse = await wechatService.getMiniProgramSession(code);
+      } else {
+        // Use OAuth API for web/app
+        authResponse = await wechatService.getAccessToken(code);
+      }
+    } catch (error) {
+      JsonRpcService.sendError(
+        res,
+        JsonRpcErrorCode.INTERNAL_ERROR,
+        `WeChat API error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        id
+      );
+      return;
+    }
 
     if (authResponse.errcode) {
       JsonRpcService.sendError(

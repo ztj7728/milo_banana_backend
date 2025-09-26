@@ -11,6 +11,7 @@ dotenv.config();
 // Import routes
 import configRoutes from './routes/config';
 import loginRoutes from './routes/login';
+import wechatLoginRoutes from './routes/wechat-login';
 import signupRoutes from './routes/signup';
 import meRoutes from './routes/me';
 import promptStoreRoutes from './routes/prompt_store';
@@ -120,6 +121,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 // API Routes
 app.use('/api/config', configRoutes);
 app.use('/api/login', authLimiter, loginRoutes);
+app.use('/api/wechat-login', authLimiter, wechatLoginRoutes);
 app.use('/api/signup', authLimiter, signupRoutes);
 app.use('/api/me', meRoutes);
 app.use('/api/prompt_store', promptStoreRoutes);
@@ -181,12 +183,15 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Admin panel: http://localhost:${PORT}/admin`);
   console.log(`🔗 API base: http://localhost:${PORT}/api`);
-  
+
   if (!process.env.ADMIN_PASSWORD) {
     console.warn('⚠️  ADMIN_PASSWORD not set in environment variables');
   }
   if (!process.env.JWT_SECRET) {
     console.warn('⚠️  JWT_SECRET not set in environment variables');
+  }
+  if (!process.env.WECHAT_APP_ID || !process.env.WECHAT_APP_SECRET) {
+    console.warn('⚠️  WeChat configuration incomplete. Set WECHAT_APP_ID and WECHAT_APP_SECRET for WeChat login support');
   }
 });
 

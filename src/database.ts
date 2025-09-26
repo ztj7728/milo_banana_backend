@@ -5,6 +5,11 @@ export interface User {
   username: string;
   password: string;
   points: number;
+  wechat_openid?: string;
+  wechat_unionid?: string;
+  avatar_url?: string;
+  nickname?: string;
+  created_at?: string;
 }
 
 export interface Config {
@@ -42,9 +47,35 @@ export class Database {
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         points INTEGER DEFAULT 100,
+        wechat_openid TEXT UNIQUE,
+        wechat_unionid TEXT,
+        avatar_url TEXT,
+        nickname TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
+    // Add WeChat fields to existing users table if they don't exist
+    try {
+      await this.run(`ALTER TABLE users ADD COLUMN wechat_openid TEXT UNIQUE`);
+    } catch (err) {
+      // Column already exists, ignore
+    }
+    try {
+      await this.run(`ALTER TABLE users ADD COLUMN wechat_unionid TEXT`);
+    } catch (err) {
+      // Column already exists, ignore
+    }
+    try {
+      await this.run(`ALTER TABLE users ADD COLUMN avatar_url TEXT`);
+    } catch (err) {
+      // Column already exists, ignore
+    }
+    try {
+      await this.run(`ALTER TABLE users ADD COLUMN nickname TEXT`);
+    } catch (err) {
+      // Column already exists, ignore
+    }
 
     // Create config table
     await this.run(`
@@ -128,10 +159,30 @@ export class Database {
     return result.lastID as number;
   }
 
+  async createWeChatUser(wechatOpenid: string, wechatUnionid?: string, avatarUrl?: string, nickname?: string): Promise<number> {
+    // Generate a unique username for WeChat users
+    const username = `wechat_${wechatOpenid.substring(0, 12)}_${Date.now()}`;
+    const defaultPassword = 'wechat_auth'; // WeChat users don't use password login
+
+    const result = await this.run(
+      "INSERT INTO users (username, password, wechat_openid, wechat_unionid, avatar_url, nickname) VALUES (?, ?, ?, ?, ?, ?)",
+      username, defaultPassword, wechatOpenid, wechatUnionid || null, avatarUrl || null, nickname || null
+    );
+    return result.lastID as number;
+  }
+
   async getUserByUsername(username: string): Promise<User | null> {
     const user = await this.get(
       "SELECT * FROM users WHERE username = ?",
       username
+    );
+    return user as User || null;
+  }
+
+  async getUserByWeChatOpenid(openid: string): Promise<User | null> {
+    const user = await this.get(
+      "SELECT * FROM users WHERE wechat_openid = ?",
+      openid
     );
     return user as User || null;
   }

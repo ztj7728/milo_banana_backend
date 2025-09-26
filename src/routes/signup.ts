@@ -84,6 +84,18 @@ router.post('/', async (req: Request, res: Response) => {
     const hashedPassword = await AuthService.hashPassword(password);
     const userId = await database.createUser(username, hashedPassword);
 
+    // Fetch the created user to get the actual data including default points
+    const createdUser = await database.getUserById(userId);
+    if (!createdUser) {
+      JsonRpcService.sendError(
+        res,
+        JsonRpcErrorCode.INTERNAL_ERROR,
+        'Failed to retrieve created user',
+        id
+      );
+      return;
+    }
+
     // Generate token for immediate login
     const token = AuthService.generateToken({
       userId,
@@ -93,9 +105,9 @@ router.post('/', async (req: Request, res: Response) => {
     JsonRpcService.sendSuccess(res, {
       message: 'User created successfully',
       user: {
-        id: userId,
-        username,
-        points: 100
+        id: createdUser.id,
+        username: createdUser.username,
+        points: createdUser.points
       },
       access_token: token,
       token_type: 'Bearer',

@@ -47,7 +47,12 @@ router.post('/', authenticateToken, async (req: AuthenticatedRequest, res: Respo
     JsonRpcService.sendSuccess(res, {
       id: user.id,
       username: user.username,
-      points: user.points
+      nickname: user.nickname,
+      points: user.points,
+      wechat_openid: user.wechat_openid,
+      wechat_unionid: user.wechat_unionid,
+      avatar_url: user.avatar_url,
+      created_at: user.created_at
     }, id);
 
   } catch (error) {

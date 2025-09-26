@@ -33,7 +33,7 @@ router.post('/', async (req: Request, res: Response) => {
       return;
     }
 
-    const { username, password } = params;
+    const { username, password, nickname } = params;
 
     if (!username || !password) {
       JsonRpcService.sendError(
@@ -82,7 +82,7 @@ router.post('/', async (req: Request, res: Response) => {
 
     // Hash password and create user
     const hashedPassword = await AuthService.hashPassword(password);
-    const userId = await database.createUser(username, hashedPassword);
+    const userId = await database.createUser(username, hashedPassword, nickname);
 
     // Fetch the created user to get the actual data including default points
     const createdUser = await database.getUserById(userId);
@@ -107,6 +107,7 @@ router.post('/', async (req: Request, res: Response) => {
       user: {
         id: createdUser.id,
         username: createdUser.username,
+        nickname: createdUser.nickname,
         points: createdUser.points
       },
       access_token: token,

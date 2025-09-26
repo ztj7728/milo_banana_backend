@@ -151,10 +151,10 @@ export class Database {
     });
   }
 
-  async createUser(username: string, password: string): Promise<number> {
+  async createUser(username: string, password: string, nickname?: string): Promise<number> {
     const result = await this.run(
-      "INSERT INTO users (username, password) VALUES (?, ?)",
-      username, password
+      "INSERT INTO users (username, password, nickname) VALUES (?, ?, ?)",
+      username, password, nickname
     );
     return result.lastID as number;
   }

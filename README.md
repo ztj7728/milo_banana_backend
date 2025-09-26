@@ -7,7 +7,8 @@ An elegant TypeScript backend with web admin panel and JSON-RPC 2.0 API interfac
 - **TypeScript** - Type-safe backend development
 - **SQLite Database** - Lightweight, file-based database with auto-initialization
 - **JSON-RPC 2.0** - Standardized API protocol for all endpoints
-- **OAuth2-compliant Authentication** - Secure user authentication with JWT tokens
+- **Dual Authentication** - Regular login + WeChat Mini-Program authentication
+- **User Management** - Complete user system with nicknames and profiles
 - **Prompt Store Management** - Full CRUD operations for AI prompts
 - **Web Admin Panel** - Beautiful tabbed interface for configuration and prompt management
 - **Rate Limiting** - Protection against abuse with IP-based throttling
@@ -25,6 +26,7 @@ All API endpoints use **JSON-RPC 2.0** protocol. Each request must include:
 ### Authentication
 - `POST /api/login` - User login (`auth.login`)
 - `POST /api/signup` - User registration (`auth.signup`)
+- `POST /api/wechat-login` - WeChat authentication (`auth.wechat_login`)
 - `POST /api/me` - Get current user profile (`user.profile`, requires auth)
 
 ### Configuration (Admin Only)
@@ -98,6 +100,15 @@ curl -X POST http://localhost:3088/health \
    JWT_SECRET=your_jwt_secret_key
    PORT=3088
    NODE_ENV=development
+
+   # WeChat Configuration (optional)
+   # For WeChat Official Account (web/app login)
+   WECHAT_APP_ID=your_wechat_official_account_app_id
+   WECHAT_APP_SECRET=your_wechat_official_account_app_secret
+
+   # For WeChat Mini Program
+   WECHAT_MINIPROGRAM_APP_ID=your_wechat_mini_program_app_id
+   WECHAT_MINIPROGRAM_APP_SECRET=your_wechat_mini_program_app_secret
    ```
 
 4. **Build and start:**
@@ -133,7 +144,8 @@ curl -X POST http://localhost:3088/api/signup \
     "method": "auth.signup",
     "params": {
       "username": "testuser",
-      "password": "password123"
+      "password": "password123",
+      "nickname": "Test User"
     },
     "id": 1
   }'
@@ -154,6 +166,27 @@ curl -X POST http://localhost:3088/api/login \
   }'
 ```
 
+**WeChat Mini-Program Login:**
+```bash
+curl -X POST http://localhost:3088/api/wechat-login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "auth.wechat_login",
+    "params": {
+      "code": "MINI_PROGRAM_JS_CODE",
+      "platform": "miniprogram",
+      "userInfo": {
+        "nickName": "微信用户",
+        "avatarUrl": "https://example.com/avatar.jpg"
+      },
+      "signature": "signature_from_wx_getUserProfile",
+      "rawData": "raw_data_from_wx_getUserProfile"
+    },
+    "id": 3
+  }'
+```
+
 {"jsonrpc":"2.0","result":{"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJpYXQiOjE3NTg1Njk1MzMsImV4cCI6MTc1ODY1NTkzMywiYXVkIjoibWlsby1iYW5hbmEtY2xpZW50IiwiaXNzIjoibWlsby1iYW5hbmEtYmFja2VuZCJ9.H02T02sOlpAkr3MJGCxu2Wkc6VpiRtkv56cTwo6LCZ8","token_type":"Bearer","expires_in":86400,"scope":"read write"},"id":2}
 
 **Get user profile:**
@@ -168,7 +201,7 @@ curl -X POST http://localhost:3088/api/me \
   }'
 ```
 
-{"jsonrpc":"2.0","result":{"id":1,"username":"testuser","points":500},"id":3}
+{"jsonrpc":"2.0","result":{"id":1,"username":"testuser","nickname":"Test User","points":100,"wechat_openid":null,"wechat_unionid":null,"avatar_url":null,"created_at":"2025-09-26 03:51:00"},"id":3}
 
 **Get configuration:**
 ```bash
@@ -464,7 +497,11 @@ curl -X POST http://localhost:3088/api/images/generations \
 - **`id`**: Integer (auto-generated)
 - **`username`**: String (unique)
 - **`password`**: String (hashed, never returned in API responses)
+- **`nickname`**: String (optional, display name for users)
 - **`points`**: Integer (user's point balance, minimum 0)
+- **`wechat_openid`**: String (optional, WeChat user unique ID)
+- **`wechat_unionid`**: String (optional, WeChat union ID across apps)
+- **`avatar_url`**: String (optional, user avatar image URL)
 - **`created_at`**: DateTime (auto-generated)
 
 ### Image Generation Fields
@@ -494,12 +531,14 @@ src/
 ├── database.ts           # Database models and operations
 ├── auth.ts              # Authentication utilities
 ├── jsonrpc.ts           # JSON-RPC 2.0 utilities
+├── wechat.ts            # WeChat API integration
 ├── services/
 │   └── ai-service.ts    # AI platform integrations (Gemini, OpenAI)
 └── routes/
     ├── config.ts        # Configuration endpoints
     ├── login.ts         # Login endpoint
     ├── signup.ts        # Signup endpoint
+    ├── wechat-login.ts  # WeChat authentication endpoint
     ├── me.ts           # User profile endpoint
     ├── prompt_store.ts  # Prompt management endpoints
     ├── users.ts         # User management endpoints

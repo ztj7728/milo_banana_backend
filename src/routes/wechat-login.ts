@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { database } from '../database';
 import { AuthService } from '../auth';
 import { JsonRpcService, JsonRpcErrorCode, jsonRpcMiddleware } from '../jsonrpc';
-import { createWeChatService } from '../wechat';
+import { createWeChatService, WeChatService } from '../wechat';
 
 const router = Router();
 
@@ -116,8 +116,8 @@ router.post('/', async (req: Request, res: Response) => {
       let nickname = userInfo?.nickName;
       let avatarUrl = userInfo?.avatarUrl;
 
-      // If we have access_token, try to get more detailed user info
-      if (authResponse.access_token) {
+      // For web/app login, try to get more detailed user info using access_token
+      if (loginPlatform !== 'miniprogram' && authResponse.access_token) {
         try {
           const detailedUserInfo = await wechatService.getUserInfo(
             authResponse.access_token,
@@ -131,6 +131,27 @@ router.post('/', async (req: Request, res: Response) => {
         } catch (error) {
           // Ignore error, use basic userInfo if available
           console.warn('Failed to fetch detailed WeChat user info:', error);
+        }
+      }
+
+      // For mini-program, userInfo should come from frontend via wx.getUserProfile()
+      // Validate signature if provided (for mini-program security)
+      if (loginPlatform === 'miniprogram' && signature && rawData && authResponse.session_key) {
+        const isValidSignature = WeChatService.validateSignature(
+          signature,
+          rawData,
+          authResponse.session_key
+        );
+
+        if (!isValidSignature) {
+          JsonRpcService.sendError(
+            res,
+            JsonRpcErrorCode.AUTHENTICATION_ERROR,
+            'Invalid WeChat user data signature',
+            id,
+            { error: 'invalid_signature' }
+          );
+          return;
         }
       }
 

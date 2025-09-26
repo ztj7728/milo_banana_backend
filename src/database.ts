@@ -41,7 +41,7 @@ export class Database {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        points INTEGER DEFAULT 0,
+        points INTEGER DEFAULT 100,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);

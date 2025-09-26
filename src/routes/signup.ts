@@ -95,7 +95,7 @@ router.post('/', async (req: Request, res: Response) => {
       user: {
         id: userId,
         username,
-        points: 0
+        points: 100
       },
       access_token: token,
       token_type: 'Bearer',

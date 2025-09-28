@@ -4,4 +4,4 @@ node_modules/
 .env
 CLAUDE.md
 package-lock.json
-.claude
+.claude/
